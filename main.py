@@ -2,15 +2,25 @@ import turtle, sys, math, random, time
 
 grid = []
 
-with open('smallest.txt') as file:
+with open("smallest.txt", 'r') as file:
+    first_line = file.readline().strip()
+
     for line in file:
         grid.append(line.split())
+
+file.close()
+
+
+rows = int(first_line[0])
+cols = int(first_line[2])
+
+grid = grid[:rows]
+
+
 t = turtle.Turtle()
 cellHeight = 10
 cellWidth = 10
-rows = len(grid)
 print("Rows", rows)
-cols = len(grid[0])
 print("Columns", cols)
 goal = None
 start = None
