@@ -2,17 +2,22 @@ import turtle, sys, math, random, time
 
 grid = []
 
-with open("smallest.txt", 'r') as file:
+with open("smallest.txt", "r") as file:
     first_line = file.readline().strip()
 
     for line in file:
-        grid.append(line.split())
+        line = list(line)
+        if "\n" in line:
+            line.pop()
+        grid.append(line)
+
+    print(grid)
 
 file.close()
 
-
+first_line = first_line.split(",")
 rows = int(first_line[0])
-cols = int(first_line[2])
+cols = int(first_line[1])
 
 grid = grid[:rows]
 
@@ -46,6 +51,9 @@ def main(visited):
     print("END---------------------------------------------")
 
 
+main_way = []
+
+
 def colorgrid():
     for x in range(rows):
         for y in range(cols):
@@ -55,9 +63,9 @@ def colorgrid():
                 draw_filled_rect(x, y, "blue")  # Start point in blue
             elif (x, y) == goal:
                 draw_filled_rect(x, y, "green")  # Goal point in green
-            elif grid[x][y] == '_':
+            elif grid[x][y] == "-":
                 draw_filled_rect(x, y, "white")  # Ways in white
-            elif grid[x][y] == '%':
+            elif grid[x][y] == "%":
                 draw_filled_rect(x, y, "black")  # Walls in black
 
 
@@ -65,13 +73,13 @@ def add_neighbors(x, y):
     curr_key = (x, y)
     list_of_neighbors = []
 
-    if y < cols - 1 and grid[x][y + 1] != '%':
+    if y < cols - 1 and grid[x][y + 1] != "%":
         list_of_neighbors.append((x, y + 1))
-    if x < rows - 1 and grid[x + 1][y] != '%':
+    if x < rows - 1 and grid[x + 1][y] != "%":
         list_of_neighbors.append((x + 1, y))
-    if y > 0 and grid[x][y - 1] != '%':
+    if y > 0 and grid[x][y - 1] != "%":
         list_of_neighbors.append((x, y - 1))
-    if x > 0 and grid[x - 1][y] != '%':
+    if x > 0 and grid[x - 1][y] != "%":
         list_of_neighbors.append((x - 1, y))
 
     copy = []
@@ -94,17 +102,17 @@ def draw_filled_rect(x, y, color):
         t.left(90)
     t.end_fill()
     t.up()
-    
-    
+
+
 def draw_path(val):
     current = start
     t.pensize(2)
     t.pencolor("red")
     t.speed(1)
 
-    movements = val.split(',')
+    movements = val.split(",")
     for move in movements:
-        x, y = map(int, move.split(':'))
+        x, y = map(int, move.split(":"))
         if current[0] < x:
             t.goto((current[1] + 1) * cellWidth, -current[0] * cellHeight)
             t.pendown()
@@ -131,7 +139,6 @@ def draw_path(val):
     t.hideturtle()
 
 
-
 def DLS(start_state, goal, depth, visited):
     visited.append(start_state)
     draw_filled_rect(start_state[0], start_state[1], "blue")
@@ -139,6 +146,7 @@ def DLS(start_state, goal, depth, visited):
     if start_state == goal:
         print(depth)
         draw_filled_rect(goal[0], goal[1], "green")
+        main_way.append([start_state[0], start_state[1]])
         print("End can be reached")
         return str(start_state[0]) + ":" + str(start_state[1])
     elif depth == 0:
@@ -150,16 +158,35 @@ def DLS(start_state, goal, depth, visited):
                 val = DLS(neighbor, goal, depth - 1, visited)
         if val is not False:
             draw_filled_rect(start_state[0], start_state[1], "green")
+            main_way.append([start_state[0], start_state[1]])
             return val + "," + str(start_state[0]) + ":" + str(start_state[1])
         return False
+
+
+def correct_way(main_way):
+    main_way = main_way[::-1]
+    print(main_way)
+    ways = []
+    for tp in range(len(main_way) - 1):
+        if main_way[tp][0] < main_way[tp + 1][0]:
+            ways.append("D")
+        elif main_way[tp][0] > main_way[tp + 1][0]:
+            ways.append("U")
+        elif main_way[tp][1] > main_way[tp + 1][1]:
+            ways.append("L")
+        elif main_way[tp][1] < main_way[tp + 1][1]:
+            ways.append("R")
+    return ways
 
 
 if __name__ == "__main__":
     for i in range(rows):
         for j in range(cols):
-            if grid[i][j] == 'S':
+            if grid[i][j] == "S":
                 start = (i, j)
-            elif grid[i][j] == 'G':
+            elif grid[i][j] == "G":
                 goal = (i, j)
 
     main(visited)
+    ways = correct_way(main_way)
+    print(ways)
