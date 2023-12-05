@@ -2,7 +2,7 @@ import turtle, sys, math, random, time
 
 grid = []
 
-with open("smallest.txt", "r") as file:
+with open("Test Case/test_case_2.txt", "r") as file:
     first_line = file.readline().strip()
 
     for line in file:
@@ -23,8 +23,8 @@ grid = grid[:rows]
 
 
 t = turtle.Turtle()
-cellHeight = 10
-cellWidth = 10
+cellHeight = 35
+cellWidth = 35
 print("Rows", rows)
 print("Columns", cols)
 goal = None
@@ -60,13 +60,17 @@ def colorgrid():
             add_neighbors(x, y)
 
             if (x, y) == start:
-                draw_filled_rect(x, y, "blue")  # Start point in blue
+                draw_filled_rect(
+                    x - rows / 2, y - cols / 2, "red"
+                )  # Start point in blue
             elif (x, y) == goal:
-                draw_filled_rect(x, y, "green")  # Goal point in green
+                draw_filled_rect(
+                    x - rows / 2, y - cols / 2, "green"
+                )  # Goal point in green
             elif grid[x][y] == "-":
-                draw_filled_rect(x, y, "white")  # Ways in white
+                draw_filled_rect(x - rows / 2, y - cols / 2, "white")  # Ways in white
             elif grid[x][y] == "%":
-                draw_filled_rect(x, y, "black")  # Walls in black
+                draw_filled_rect(x - rows / 2, y - cols / 2, "black")  # Walls in black
 
 
 def add_neighbors(x, y):
@@ -114,24 +118,36 @@ def draw_path(val):
     for move in movements:
         x, y = map(int, move.split(":"))
         if current[0] < x:
-            t.goto((current[1] + 1) * cellWidth, -current[0] * cellHeight)
+            t.goto(
+                (current[1] - cols / 2) * cellWidth,
+                -(current[0] - rows / 2) * cellHeight,
+            )
             t.pendown()
-            t.goto((y + 1) * cellWidth, -x * cellHeight)
+            t.goto((y - cols / 2) * cellWidth, -(x - rows / 2) * cellHeight)
             t.penup()
         elif current[0] > x:
-            t.goto((current[1] + 1) * cellWidth, -current[0] * cellHeight)
+            t.goto(
+                (current[1] - cols / 2) * cellWidth,
+                -(current[0] - rows / 2) * cellHeight,
+            )
             t.pendown()
-            t.goto((y + 1) * cellWidth, -x * cellHeight)
+            t.goto((y - cols / 2) * cellWidth, -(x - rows / 2) * cellHeight)
             t.penup()
         elif current[1] < y:
-            t.goto((current[1] + 1) * cellWidth, -current[0] * cellHeight)
+            t.goto(
+                (current[1] - cols / 2) * cellWidth,
+                -(current[0] - rows / 2) * cellHeight,
+            )
             t.pendown()
-            t.goto((y + 1) * cellWidth, -x * cellHeight)
+            t.goto((y - cols / 2) * cellWidth, -(x - rows / 2) * cellHeight)
             t.penup()
         elif current[1] > y:
-            t.goto((current[1] + 1) * cellWidth, -current[0] * cellHeight)
+            t.goto(
+                (current[1] - cols / 2) * cellWidth,
+                -(current[0] - rows / 2) * cellHeight,
+            )
             t.pendown()
-            t.goto((y + 1) * cellWidth, -x * cellHeight)
+            t.goto((y - cols / 2) * cellWidth, -(x - rows / 2) * cellHeight)
             t.penup()
 
         current = (x, y)
@@ -141,11 +157,11 @@ def draw_path(val):
 
 def DLS(start_state, goal, depth, visited):
     visited.append(start_state)
-    draw_filled_rect(start_state[0], start_state[1], "blue")
+    draw_filled_rect(start_state[0] - rows / 2, start_state[1] - cols / 2, "blue")
 
     if start_state == goal:
         print(depth)
-        draw_filled_rect(goal[0], goal[1], "green")
+        draw_filled_rect(goal[0] - rows / 2, goal[1] - cols / 2, "green")
         main_way.append([start_state[0], start_state[1]])
         print("End can be reached")
         return str(start_state[0]) + ":" + str(start_state[1])
@@ -157,7 +173,9 @@ def DLS(start_state, goal, depth, visited):
             if neighbor not in visited and val is False:
                 val = DLS(neighbor, goal, depth - 1, visited)
         if val is not False:
-            draw_filled_rect(start_state[0], start_state[1], "green")
+            draw_filled_rect(
+                start_state[0] - rows / 2, start_state[1] - cols / 2, "green"
+            )
             main_way.append([start_state[0], start_state[1]])
             return val + "," + str(start_state[0]) + ":" + str(start_state[1])
         return False
